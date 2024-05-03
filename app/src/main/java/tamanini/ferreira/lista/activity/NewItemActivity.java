@@ -23,6 +23,9 @@ import tamanini.ferreira.lista.R;
 public class NewItemActivity extends AppCompatActivity {
 
     static int PHOTO_PICKER_REQUEST = 1;
+
+    //Uri e um endereco para um dado nao localizado o dentro do espaco reservado a app, mas sim no espaco de outras apps
+    //Guardando o endereço pelo seletor de documentos android
     Uri photoSelected = null;
 
     @Override
@@ -36,20 +39,28 @@ public class NewItemActivity extends AppCompatActivity {
             return insets;
         });
 
+        //obtendo botao e definindo o ouvidor de cliques
         ImageButton imgCI = findViewById(R.id.imbCI);
         imgCI.setOnClickListener(new View.OnClickListener() {
             @Override
+
+            //executando a abertura da galeria
             public void onClick(View v) {
+                //intent implicido
                 Intent photoPickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                //estamos interessados apenas em documentos com mimetype “image/*”
                 photoPickerIntent.setType("image/*");
+                //executando intent
                 startActivityForResult(photoPickerIntent,PHOTO_PICKER_REQUEST);
             }
 
         });
+        //obtendo botao
         Button btnAddItem = findViewById(R.id.btnAddItem);
-
+        //setando ouvidor de cliques
         btnAddItem.setOnClickListener(new View.OnClickListener(){
             @Override
+            //verificando se os campos foram preenchidos pelo usuario
             public  void onClick(View v){
 
                 if (photoSelected == null) {
@@ -59,6 +70,8 @@ public class NewItemActivity extends AppCompatActivity {
 
                 EditText etTitle = findViewById(R.id.etTitle);
                 String title = etTitle.getText().toString();
+
+                //caso os campos vazio, exibe a mensagem de erro
                 if (title.isEmpty()) {
                     Toast.makeText(NewItemActivity.this, "É necessário inserir um título", Toast.LENGTH_LONG).show();
                     return;
@@ -70,11 +83,14 @@ public class NewItemActivity extends AppCompatActivity {
                     return;
                 }
 
-                Intent i = new Intent();
-                i.setData(photoSelected);
+                //mostra como a activity pode retornar dados para a activity que a chamou
+                Intent i = new Intent(); //serve unicamente para guardar os dados a serem retornados
+                i.setData(photoSelected); //setando o Uri da imagem escolhida dentro do intent
+                //setando titulo e descricao
                 i.putExtra("title",title);
                 i.putExtra("description",description);
-                setResult(Activity.RESULT_OK, i);
+                //indicando resultado
+                setResult(Activity.RESULT_OK, i);//RESULT_OK indica que há dados de retorno
                 finish();
 
 
@@ -86,9 +102,13 @@ public class NewItemActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
+        //referente ao fornecido na chamada com id
         if(resultCode == PHOTO_PICKER_REQUEST) {
+            //codigo de sucesso
             if(resultCode == Activity.RESULT_OK) {
+                //caso essas duas condicoes sejam verdadeiras, entao obtemos o resultado linha 103 e 105
                 photoSelected = data.getData();
+                //obtendo o Uri e guardando dentro do atributo
                 ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);
                 imvfotoPreview.setImageURI(photoSelected);
 

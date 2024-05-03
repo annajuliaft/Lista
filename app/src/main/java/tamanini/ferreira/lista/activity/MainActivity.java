@@ -30,46 +30,57 @@ public class MainActivity extends AppCompatActivity {
     List<MyItem> itens = new ArrayList<>();
 
     MyAdapter myAdapter;
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-            RecyclerView rvItens = findViewById(R.id.rvItens);
-
-            myAdapter = new MyAdapter((this,itens);
-            rvItens.setAdapter(myAdapter);
-
-            rvItens.setHasFixedSize(true);
-
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-            rvItens.setLayoutManager(layoutManager);
-
-            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvItens.getContext(),DividerItemDecoration.VERTICAL);
-            rvItens.addItemDecoration(dividerItemDecoration);
-
-        }
+        //Obtendo o botão FAB e registrando um ouvidor de cliques
+        FloatingActionButton fabAddItem = findViewById(R.id.fabAddNewItem);
         fabAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //intent explicido
+                //Intent para navegar para NewItemActivity
                 Intent i = new Intent(MainActivity.this,NewItemActivity.class);
+
+                //O destino ira retornar com dados para o que iniciou a navegacao
                 startActivityForResult(i, NEW_ITEM_REQUEST);
 
             }
         });
+        //obtendo o RecycleView
+        RecyclerView rvItens = findViewById(R.id.rvItens);
+
+        myAdapter = new MyAdapter(this,itens);
+        //criando o MyAdapter e setando no RecycleView
+        rvItens.setAdapter(myAdapter);
+        //o metodo setHasFixedSize indica ao RecycleView que nao ha variacao de tamanho entre os itens da lista
+        rvItens.setHasFixedSize(true);
+        //criando um gerenciador de layout do tipo linear e o setando no RecycleView
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        rvItens.setLayoutManager(layoutManager);
+        //criamos um decorador para a lista
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvItens.getContext(),DividerItemDecoration.VERTICAL);
+        rvItens.addItemDecoration(dividerItemDecoration);
 
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //verificando se as condicoes de retorno foram cumpridas
         if(requestCode == NEW_ITEM_REQUEST) {
             if(resultCode == Activity.RESULT_OK){
+                //se foram cumprida, criamos uma instancia, para guardar dados do item
                 MyItem myItem = new MyItem();
+                //obtemos os dados retornados r NewItemActivity e os guardamos dentro de myItem
                 myItem.title = data.getStringExtra("title");
                 myItem.description = data.getStringExtra("description");
                 myItem.photo = data.getData();
-
+                //adicionando item a uma lista de itens
                 itens.add(myItem);
+                // para que o novo item seja mostrado no  RecycleView, o Adapter precisa ser notificado
                 myAdapter.notifyItemInserted(itens.size()-1);
             }
         }
