@@ -23,6 +23,9 @@
         android:layout_marginTop="8dp"
         android:hint="Título"
         android:text="Título"
+        android:textColor="#E91E63"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imvPhoto"
         app:layout_constraintTop_toTopOf="parent" />

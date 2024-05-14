@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,8 +18,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import tamanini.ferreira.lista.R;
+import tamanini.ferreira.lista.model.NewItemActivityViewModel;
 
 public class NewItemActivity extends AppCompatActivity {
 
@@ -26,7 +29,6 @@ public class NewItemActivity extends AppCompatActivity {
 
     //Uri e um endereco para um dado nao localizado o dentro do espaco reservado a app, mas sim no espaco de outras apps
     //Guardando o endereço pelo seletor de documentos android
-    Uri photoSelected = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,14 @@ public class NewItemActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);
+
+        Uri selectPhotoLocation = vm.getSelectPhotoLocation();
+        if(selectPhotoLocation != null) {
+            ImageView imvPhotoPreview = findViewById(R.id.imvPhotoPreview);
+            imvPhotoPreview.setImageURI(selectPhotoLocation);
+        }
 
         //obtendo botao e definindo o ouvidor de cliques
         ImageButton imgCI = findViewById(R.id.imbCI);
@@ -62,6 +72,9 @@ public class NewItemActivity extends AppCompatActivity {
             @Override
             //verificando se os campos foram preenchidos pelo usuario
             public  void onClick(View v){
+
+                NewItemActivityViewModel vm = new ViewModelProvider(NewItemActivity.this).get(NewItemActivityViewModel.class);
+                Uri photoSelected = vm.getSelectPhotoLocation();
 
                 if (photoSelected == null) {
                     Toast.makeText(NewItemActivity.this, "É necessário selecionar uma imagem!" , Toast.LENGTH_LONG).show();
@@ -93,7 +106,6 @@ public class NewItemActivity extends AppCompatActivity {
                 setResult(Activity.RESULT_OK, i);//RESULT_OK indica que há dados de retorno
                 finish();
 
-
             }
         });
     }
@@ -101,16 +113,17 @@ public class NewItemActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        super.onActivityResult(requestCode, resultCode, data);
         //referente ao fornecido na chamada com id
-        if(resultCode == PHOTO_PICKER_REQUEST) {
+        if(requestCode == PHOTO_PICKER_REQUEST) {
             //codigo de sucesso
             if(resultCode == Activity.RESULT_OK) {
-                //caso essas duas condicoes sejam verdadeiras, entao obtemos o resultado linha 103 e 105
-                photoSelected = data.getData();
-                //obtendo o Uri e guardando dentro do atributo
-                ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);
-                imvfotoPreview.setImageURI(photoSelected);
+                Uri photoSelected = data.getData();
+                ImageView imvPhotoPreview = findViewById(R.id.imvPhotoPreview);
+
+                imvPhotoPreview.setImageURI(photoSelected);
+
+                NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);
+                vm.setSelectPhotoLocation(photoSelected);
 
             }
         }
