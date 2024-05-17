@@ -88,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
                 Uri selectedPhotoURI = data.getData();
 
                 try {
+                    //Essa função carrega a imagem e a guarda dentro de um Bitmap
                     Bitmap photo = Util.getBitmap(MainActivity.this, selectedPhotoURI, 100, 100);
+                   // guardamos o Bitmap da imagem dentro de um objeto do tipo MyItem
                     myItem.photo = photo;
                 } catch (FileNotFoundException e){
                     e.printStackTrace();
